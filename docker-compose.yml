@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: evolution-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: evolution
+      POSTGRES_PASSWORD: evolution123
+      POSTGRES_DB: evolution
+    volumes:
+      - evolution-postgres:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+
+  redis:
+    image: redis:7-alpine
+    container_name: evolution-redis
+    restart: always
+    ports:
+      - "6380:6379"
+
+  evolution:
+    image: evolutionapi/evolution-api:v2
+    container_name: evolution-api
+    restart: always
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - "8080:8080"
+    environment:
+      # Database
+      DATABASE_ENABLED: "true"
+      DATABASE_PROVIDER: postgresql
+      DATABASE_URL: "postgresql://evolution:evolution123@postgres:5432/evolution"
+      DATABASE_SAVE_DATA_INSTANCE: "true"
+      DATABASE_SAVE_DATA_NEW_MESSAGE: "true"
+      DATABASE_SAVE_MESSAGE_UPDATE: "true"
+      DATABASE_SAVE_DATA_CONTACTS: "true"
+      DATABASE_SAVE_DATA_CHATS: "true"
+
+      # Redis
+      REDIS_ENABLED: "true"
+      REDIS_URI: "redis://redis:6379"
+
+      # API
+      PORT: 8080
+      API_KEY: "SUA_API_KEY_AQUI"
+
+      # Config
+      AUTHENTICATION_TYPE: apikey
+      LANGUAGE: pt-BR
+      LOG_LEVEL: info
+
+volumes:
+  evolution-postgres:
