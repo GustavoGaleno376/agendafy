@@ -62,7 +62,7 @@ export default function Dashboard({ activeTab, setActiveTab, appointments, onApp
           className="flex flex-col flex-1"
         >
           {activeTab === "new" ? (
-            <NewAppointment onAppointmentCreated={onAppointmentCreated} userPhone={userPhone} />
+            <NewAppointment onAppointmentCreated={onAppointmentCreated} userPhone={userPhone} userName={userName} barbershop={barbershop} />
           ) : (
             <MyAppointments appointments={appointments} />
           )}

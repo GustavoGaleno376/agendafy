@@ -1,8 +1,18 @@
 import { useLocation, Routes, Route, Navigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
+import { AuthProvider, useAuth } from "./context/AuthContext";
+import LoginPage from "./pages/LoginPage";
 import ClientPage from "./pages/ClientPage";
 import AdminPage from "./pages/AdminPage";
 import BarberPage from "./pages/BarberPage";
+
+function ProtectedRoute({ children, role }) {
+  const { user } = useAuth();
+  if (!user || (role && user.role !== role)) {
+    return <Navigate to="/login" replace />;
+  }
+  return children;
+}
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -17,10 +27,25 @@ function AnimatedRoutes() {
         transition={{ duration: 0.2, ease: "easeInOut" }}
       >
         <Routes location={location}>
-          <Route path="/" element={<ClientPage />} />
+          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/login" element={<LoginPage />} />
           <Route path="/b/:slug" element={<ClientPage />} />
-          <Route path="/admin" element={<AdminPage />} />
-          <Route path="/barber/:slug" element={<BarberPage />} />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute role="admin">
+                <AdminPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/barber/:slug"
+            element={
+              <ProtectedRoute role="barber">
+                <BarberPage />
+              </ProtectedRoute>
+            }
+          />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </motion.div>
@@ -29,5 +54,9 @@ function AnimatedRoutes() {
 }
 
 export default function App() {
-  return <AnimatedRoutes />;
+  return (
+    <AuthProvider>
+      <AnimatedRoutes />
+    </AuthProvider>
+  );
 }

@@ -1,18 +1,35 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Search, Clock, Check, Scissors } from "lucide-react";
-import { services } from "../data/mockData";
+import { services as fallbackServices } from "../data/mockData";
 import { formatCurrency } from "../utils/helpers";
+import { getServicesByBarbershop } from "../services/supabase";
 
-export default function Step2Services({ selected, onToggle }) {
+export default function Step2Services({ selected, onToggle, barbershopSlug }) {
   const [search, setSearch] = useState("");
+  const [allServices, setAllServices] = useState(fallbackServices);
+
+  useEffect(() => {
+    if (barbershopSlug) {
+      getServicesByBarbershop(barbershopSlug)
+        .then(dbServices => {
+          if (dbServices && dbServices.length > 0) {
+            setAllServices(dbServices);
+            const durationMap = {};
+            dbServices.forEach(s => { durationMap[s.name] = s.duration; });
+            localStorage.setItem("agendafy_services_map", JSON.stringify(durationMap));
+          }
+        })
+        .catch(() => {});
+    }
+  }, [barbershopSlug]);
 
   const filtered = useMemo(
     () =>
-      services.filter((s) =>
+      allServices.filter((s) =>
         s.name.toLowerCase().includes(search.toLowerCase())
       ),
-    [search]
+    [search, allServices]
   );
 
   const totalPrice = selected.reduce((sum, s) => sum + s.price, 0);

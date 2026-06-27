@@ -70,7 +70,7 @@ function makeWALink(phone, message) {
   return `https://wa.me/${formatPhoneToWA(phone)}?text=${encodeURIComponent(message)}`;
 }
 
-export default function NewAppointment({ onAppointmentCreated, userPhone }) {
+export default function NewAppointment({ onAppointmentCreated, userPhone, userName, barbershop }) {
   const [step, setStep] = useState(1);
   const [professional, setProfessional] = useState(null);
   const [services, setServices] = useState([]);
@@ -136,8 +136,8 @@ export default function NewAppointment({ onAppointmentCreated, userPhone }) {
     setLoading(true);
     
     try {
-      // Chamar Edge Function do Supabase para salvar e enviar WhatsApp
       await createAppointment({
+        clientName: userName,
         clientPhone: userPhone,
         professionalName: professional?.name,
         services: services.map((s) => s.name),
@@ -145,6 +145,8 @@ export default function NewAppointment({ onAppointmentCreated, userPhone }) {
         time,
         paymentMethod: paymentMethods.find((p) => p.id === payment)?.name || payment,
         total: totalPrice,
+        totalDuration,
+        barbershopSlug: barbershop?.slug,
       });
 
       // Atualizar estado local
@@ -256,7 +258,7 @@ export default function NewAppointment({ onAppointmentCreated, userPhone }) {
             className="min-h-full flex flex-col"
           >
             {step === 1 && (
-              <Step1Professional selected={professional} onSelect={setProfessional} />
+              <Step1Professional selected={professional} onSelect={setProfessional} barbershopSlug={barbershop?.slug} />
             )}
             {step === 2 && (
               <Step2Services
@@ -268,6 +270,7 @@ export default function NewAppointment({ onAppointmentCreated, userPhone }) {
                       : [...prev, s]
                   )
                 }
+                barbershopSlug={barbershop?.slug}
               />
             )}
             {step === 3 && (
@@ -276,6 +279,9 @@ export default function NewAppointment({ onAppointmentCreated, userPhone }) {
                 selectedTime={time}
                 onSelectDate={setDate}
                 onSelectTime={setTime}
+                barbershopSlug={barbershop?.slug}
+                professionalName={professional?.name}
+                selectedServices={services}
               />
             )}
             {step === 4 && (
