@@ -1,16 +1,52 @@
-# React + Vite
+# Agendafy
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Sistema de agendamento online para barbearias. Clientes escolhem o profissional, serviços e horário disponível. Barbeiros gerenciam sua agenda, serviços e horários de trabalho.
 
-Currently, two official plugins are available:
+## Funcionalidades
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Cliente**: Seleciona barbearia, profissional, serviços e horário — calendário respeita a disponibilidade do barbeiro
+- **Barbeiro**: Dashboard com agendamentos do dia, edição de serviços, foto de perfil, horários de trabalho (dias + horários) e folgas específicas
+- **Admin**: Gerenciamento de barbearias, upload de fotos, profissionais e serviços
+- **Notificações**: WhatsApp integrado para confirmação e alterações de agendamento
 
-## React Compiler
+## Tecnologias
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- React 19 + Vite 8
+- Tailwind CSS 4
+- Framer Motion
+- Supabase (banco de dados + Edge Functions)
+- Lucide React (ícones)
 
-## Expanding the Oxlint configuration
+## Como rodar
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+```bash
+npm install
+npm run dev
+```
+
+## Build
+
+```bash
+npm run build
+```
+
+## Configuração
+
+Crie um arquivo `.env` na raiz com as credenciais do Supabase:
+
+```
+VITE_SUPABASE_URL=https://seu-projeto.supabase.co
+VITE_SUPABASE_ANON_KEY=sua-chave-anon
+```
+
+## Migrações SQL
+
+Os arquivos em `SUPABASE_MIGRATION_*.sql` e `supabase/migrations/` devem ser executados no SQL Editor do Supabase Dashboard.
+
+## Edge Functions
+
+As funções em `supabase/functions/` podem ser deployadas com:
+
+```bash
+npx supabase functions deploy
+```
