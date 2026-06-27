@@ -12,8 +12,9 @@ export default function Header({ onOpenInfo, onOpenPhotos, barbershop }) {
       <div
         className="absolute inset-0 bg-cover bg-center scale-110"
         style={{
-          backgroundImage:
-            "url(https://images.unsplash.com/photo-1585747861115-1c7f3c0b7a0a?w=1200&h=400&fit=crop)",
+          backgroundImage: barbershop?.photos?.[0]
+            ? `url(${barbershop.photos[0]})`
+            : "url(https://images.unsplash.com/photo-1585747861115-1c7f3c0b7a0a?w=1200&h=400&fit=crop)",
         }}
       />
       <div className="absolute inset-0 bg-gradient-to-b from-zinc-950/90 via-zinc-950/70 to-zinc-950/95" />
