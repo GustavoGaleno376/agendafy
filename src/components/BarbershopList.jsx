@@ -1,9 +1,8 @@
 import { motion } from "framer-motion";
 import { MapPin, Star, ChevronRight, Store, Search } from "lucide-react";
 import { useState, useMemo } from "react";
-import { barbershops } from "../data/mockData";
 
-export default function BarbershopList({ onSelect }) {
+export default function BarbershopList({ onSelect, barbershops = [] }) {
   const [search, setSearch] = useState("");
 
   const filtered = useMemo(
@@ -11,7 +10,7 @@ export default function BarbershopList({ onSelect }) {
       barbershops.filter((b) =>
         b.name.toLowerCase().includes(search.toLowerCase())
       ),
-    [search]
+    [search, barbershops]
   );
 
   return (

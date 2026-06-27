@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useParams, useNavigate } from "react-router-dom";
 import Header from "../components/Header";
@@ -7,23 +7,42 @@ import BarbershopList from "../components/BarbershopList";
 import Dashboard from "../components/Dashboard";
 import InfoModal from "../components/InfoModal";
 import PhotosModal from "../components/PhotosModal";
-import { barbershops, initialAppointment } from "../data/mockData";
+import { getBarbershops, getBarbershopBySlug } from "../services/supabase";
 
 let nextId = 2;
 
 export default function ClientPage() {
   const { slug } = useParams();
   const navigate = useNavigate();
-  const preselected = slug ? barbershops.find((b) => b.slug === slug) : null;
+  const [barbershops, setBarbershops] = useState([]);
+  const [barbershop, setBarbershop] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const [step, setStep] = useState(preselected ? "phone" : "barbershop");
-  const [userName] = useState("Gustavo Galeno");
+  useEffect(() => {
+    if (slug) {
+      getBarbershopBySlug(slug).then(data => {
+        setBarbershop(data);
+        setLoading(false);
+      });
+    } else {
+      getBarbershops().then(data => {
+        setBarbershops(data);
+        setLoading(false);
+      });
+    }
+  }, [slug]);
+
+  const [step, setStep] = useState(slug ? "phone" : "barbershop");
+  const [userName] = useState("Cliente");
   const [userPhone, setUserPhone] = useState("");
-  const [barbershop, setBarbershop] = useState(preselected || null);
   const [activeTab, setActiveTab] = useState("new");
-  const [appointments, setAppointments] = useState([initialAppointment]);
+  const [appointments, setAppointments] = useState([]);
   const [showInfo, setShowInfo] = useState(false);
   const [showPhotos, setShowPhotos] = useState(false);
+
+  useEffect(() => {
+    if (barbershop) setStep("phone");
+  }, [barbershop]);
 
   function handleLogin(phone) {
     setUserPhone(phone);
@@ -54,11 +73,17 @@ export default function ClientPage() {
 
       <div className="app-container min-h-screen sm:min-h-0">
         <div className="absolute inset-0 bg-gradient-to-b from-blue-600/[0.03] via-transparent to-transparent pointer-events-none" />
-        <Header
-          onOpenInfo={() => setShowInfo(true)}
-          onOpenPhotos={() => setShowPhotos(true)}
-          barbershop={barbershop}
-        />
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : barbershop && (
+          <Header
+            onOpenInfo={() => setShowInfo(true)}
+            onOpenPhotos={() => setShowPhotos(true)}
+            barbershop={barbershop}
+          />
+        )}
 
         <AnimatePresence mode="wait">
           {step === "phone" ? (
@@ -80,7 +105,7 @@ export default function ClientPage() {
               transition={{ duration: 0.3 }}
               className="flex flex-col flex-1"
             >
-              <BarbershopList onSelect={handleSelectBarbershop} />
+              <BarbershopList onSelect={handleSelectBarbershop} barbershops={barbershops} />
             </motion.div>
           ) : (
             <motion.div
@@ -99,8 +124,8 @@ export default function ClientPage() {
                   userName={userName}
                   userPhone={userPhone}
                   barbershop={barbershop}
-                  onBackToBarbershops={() => setStep(preselected ? "phone" : "barbershop")}
-                  hideBack={!!preselected}
+                  onBackToBarbershops={() => setStep(slug ? "phone" : "barbershop")}
+                  hideBack={!!slug}
                 />
             </motion.div>
           )}

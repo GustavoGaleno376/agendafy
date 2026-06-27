@@ -315,7 +315,7 @@ export async function getBarbershops() {
   try {
     const { data, error } = await supabase
       .from("barbershops")
-      .select("id, slug, name, phone, whatsapp, address, instagram")
+      .select("id, slug, name, phone, whatsapp, address, instagram, hours, photos")
       .order("name");
     if (!error) return data || [];
   } catch {}
