@@ -1,7 +1,13 @@
 import { motion } from "framer-motion";
 import { Banknote, QrCode, CreditCard, Landmark, CheckCircle } from "lucide-react";
-import { paymentMethods } from "../data/mockData";
 import { formatCurrency } from "../utils/helpers";
+
+const paymentMethods = [
+  { id: "dinheiro", name: "Dinheiro", icon: "Banknote" },
+  { id: "pix", name: "PIX", icon: "QrCode" },
+  { id: "credito", name: "Crédito", icon: "CreditCard" },
+  { id: "debito", name: "Débito", icon: "Landmark" },
+];
 
 const iconMap = { Banknote, QrCode, CreditCard, Landmark };
 

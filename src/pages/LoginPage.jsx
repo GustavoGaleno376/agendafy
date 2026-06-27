@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { LogIn, User, Lock, Scissors, Loader2 } from "lucide-react";
-import { barbershops as mockBarbershops } from "../data/mockData";
 import { useAuth } from "../context/AuthContext";
 import { getProfessionals, getBarbershops } from "../services/supabase";
 
@@ -18,28 +17,11 @@ export default function LoginPage() {
   const [professionals, setProfessionals] = useState([]);
   const [loadingProfessionals, setLoadingProfessionals] = useState(false);
   const [error, setError] = useState("");
-  const [dbBarbershops, setDbBarbershops] = useState([]);
-
-  const allBarbershops = [...mockBarbershops];
-  for (const db of dbBarbershops) {
-    if (!allBarbershops.some(b => b.slug === db.slug)) {
-      allBarbershops.push({
-        id: `db-${db.slug}`,
-        name: db.name,
-        slug: db.slug,
-        phone: db.phone || "",
-        whatsapp: db.whatsapp || "",
-        address: db.address || "",
-        instagram: db.instagram || "",
-        hours: db.hours || "",
-        verified: false,
-      });
-    }
-  }
+  const [allBarbershops, setAllBarbershops] = useState([]);
 
   useEffect(() => {
     getBarbershops()
-      .then(data => setDbBarbershops(data || []))
+      .then(data => setAllBarbershops(data || []))
       .catch(() => {});
   }, []);
 

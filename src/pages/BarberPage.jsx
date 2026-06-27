@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Calendar, TrendingUp, LogOut, CheckCircle, XCircle, Clock, Wallet, Scissors, Users, Edit3, Send, X, Plus, Trash2, Camera, Upload, CalendarDays, CalendarOff, AlertTriangle } from "lucide-react";
-import { barbershops } from "../data/mockData";
 import { formatCurrency } from "../utils/helpers";
 import { useAuth } from "../context/AuthContext";
 import {
@@ -13,6 +12,7 @@ import {
   getProfessionalUnavailableDays,
   toggleProfessionalDayOff,
   getBarbershopIdBySlug,
+  getBarbershopBySlug,
   getServicesByBarbershop,
   saveService,
   deleteService,
@@ -44,8 +44,9 @@ export default function BarberPage() {
   const { slug } = useParams();
   const { logout, user } = useAuth();
   const navigate = useNavigate();
-  const barbershop = barbershops.find((b) => b.slug === slug);
   const professionalName = user?.professionalName || "";
+  const [barbershop, setBarbershop] = useState(null);
+  const [barbershopLoading, setBarbershopLoading] = useState(true);
 
   const [appointments, setAppointments] = useState([]);
   const [editingAppt, setEditingAppt] = useState(null);
@@ -88,6 +89,10 @@ export default function BarberPage() {
       .catch(console.error);
 
     if (slug) {
+      getBarbershopBySlug(slug)
+        .then(data => { if (data) setBarbershop(data); setBarbershopLoading(false); })
+        .catch(() => setBarbershopLoading(false));
+
       getProfessionals(slug)
         .then(data => setProfessionalsFromDb(data))
         .catch(console.error);
@@ -154,6 +159,14 @@ export default function BarberPage() {
       }).catch(console.error);
     }
   }, [slug, professionalName]);
+
+  if (barbershopLoading) {
+    return (
+      <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
+        <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   if (!barbershop) {
     return (

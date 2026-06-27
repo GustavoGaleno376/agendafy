@@ -7,7 +7,6 @@ import Step2Services from "./Step2Services";
 import Step3DateTime from "./Step3DateTime";
 import Step4Payment from "./Step4Payment";
 import { formatCurrency } from "../utils/helpers";
-import { barbershopInfo } from "../data/mockData";
 import { createAppointment } from "../services/supabase";
 
 const slideVariants = {

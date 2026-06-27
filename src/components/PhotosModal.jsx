@@ -1,9 +1,8 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Sparkles } from "lucide-react";
-import { barbershopInfo } from "../data/mockData";
 
 export default function PhotosModal({ open, onClose, barbershop }) {
-  const info = barbershop || info;
+  const info = barbershop || { photos: [] };
   return (
     <AnimatePresence>
       {open && (

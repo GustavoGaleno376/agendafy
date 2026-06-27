@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { User, Loader2 } from "lucide-react";
-import { professionals as fallbackProfessionals } from "../data/mockData";
 import { getProfessionals } from "../services/supabase";
 
 export default function Step1Professional({ selected, onSelect, barbershopSlug }) {
@@ -21,7 +20,7 @@ export default function Step1Professional({ selected, onSelect, barbershopSlug }
     }
   }, [barbershopSlug]);
 
-  const professionals = list !== null && list.length > 0 ? list : list === null ? null : fallbackProfessionals;
+  const professionals = list;
 
   return (
     <div className="flex flex-col flex-1">

@@ -1,13 +1,12 @@
 import { useState, useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Search, Clock, Check, Scissors } from "lucide-react";
-import { services as fallbackServices } from "../data/mockData";
 import { formatCurrency } from "../utils/helpers";
 import { getServicesByBarbershop } from "../services/supabase";
 
 export default function Step2Services({ selected, onToggle, barbershopSlug }) {
   const [search, setSearch] = useState("");
-  const [allServices, setAllServices] = useState(fallbackServices);
+  const [allServices, setAllServices] = useState([]);
 
   useEffect(() => {
     if (barbershopSlug) {

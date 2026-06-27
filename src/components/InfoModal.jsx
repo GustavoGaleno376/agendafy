@@ -1,9 +1,8 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { X, MapPin, Phone, Globe, Clock, ChevronRight, MessageCircle } from "lucide-react";
-import { barbershopInfo } from "../data/mockData";
 
 export default function InfoModal({ open, onClose, barbershop }) {
-  const info = barbershop || info;
+  const info = barbershop || {};
   return (
     <AnimatePresence>
       {open && (

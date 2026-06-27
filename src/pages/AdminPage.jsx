@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Store, LogOut, Plus, ChevronRight, Save, ExternalLink, Check, Globe, Clock, Phone, MapPin, MessageCircle, Key, Hash, Camera, ArrowLeft, Lock, Trash2, UserPlus, Loader2, AlertCircle, Upload } from "lucide-react";
-import { barbershops as initialBarbershops } from "../data/mockData";
 import { useAuth } from "../context/AuthContext";
 import { supabase, saveProfessionals, getBarbershopBySlug, getProfessionals, getBarbershops } from "../services/supabase";
 
@@ -89,7 +88,7 @@ function Toast({ message, type, onClose }) {
 export default function AdminPage() {
   const { logout, updatePassword } = useAuth();
   const navigate = useNavigate();
-  const [barbershops, setBarbershops] = useState(initialBarbershops);
+  const [barbershops, setBarbershops] = useState([]);
   const [view, setView] = useState("list");
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(emptyBarbershop);
@@ -113,31 +112,7 @@ export default function AdminPage() {
   useEffect(() => {
     getBarbershops()
       .then(dbList => {
-        if (dbList && dbList.length > 0) {
-          setBarbershops(prev => {
-            const merged = [...prev];
-            dbList.forEach(db => {
-              if (!merged.some(b => b.slug === db.slug)) {
-                merged.push({
-                  id: `db-${db.slug}`,
-                  name: db.name,
-                  slug: db.slug,
-                  address: db.address || "",
-                  phone: db.phone || "",
-                  whatsapp: db.whatsapp || "",
-                  instagram: db.instagram || "",
-                  hours: "",
-                  verified: false,
-                  zapiInstance: "",
-                  zapiToken: "",
-                  zapiClientToken: "",
-                  photos: [],
-                });
-              }
-            });
-            return merged;
-          });
-        }
+        if (dbList) setBarbershops(dbList);
       })
       .catch(() => {});
   }, []);
