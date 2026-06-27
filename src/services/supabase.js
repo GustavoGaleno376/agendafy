@@ -5,6 +5,10 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+/**
+ * Salva o agendamento no banco de dados e dispara 
+ * a mensagem de confirmação imediata via WhatsApp.
+ */
 export async function createAppointment({
   clientPhone,
   professionalName,
@@ -14,7 +18,7 @@ export async function createAppointment({
   paymentMethod,
   total,
 }) {
-  // Salvar no banco diretamente
+  // 1. Salvar no banco de dados do Supabase
   const { data, error } = await supabase
     .from("appointments")
     .insert({
@@ -34,16 +38,36 @@ export async function createAppointment({
     throw new Error(error.message || "Erro ao salvar agendamento");
   }
 
-  // Tentar enviar WhatsApp via Edge Function (opcional)
-  supabase.functions.invoke("send-whatsapp", {
-    body: { clientPhone, professionalName, services, date, time, paymentMethod, total },
-  }).catch(() => {
-    console.log("WhatsApp não configurado ainda");
-  });
+  // 2. Disparar a Edge Function para enviar o WhatsApp de CONFIRMAÇÃO
+  // Enviamos o 'type: "immediate"' para ativar a primeira condicional da sua Function
+  supabase.functions
+    .invoke("send-whatsapp", {
+      body: { 
+        type: "immediate", 
+        clientPhone, 
+        professionalName, 
+        services, 
+        date, 
+        time, 
+        paymentMethod, 
+        total 
+      },
+    })
+    .then((res) => {
+      console.log("Edge Function executada com sucesso:", res);
+    })
+    .catch((err) => {
+      console.error("Erro ao chamar Edge Function do WhatsApp:", err);
+    });
 
+  // Retorna os dados do agendamento que foram salvos no banco
   return data;
 }
 
+/**
+ * Busca todos os agendamentos salvos no banco, 
+ * ordenados do mais recente para o mais antigo.
+ */
 export async function getAppointments() {
   const { data, error } = await supabase
     .from("appointments")

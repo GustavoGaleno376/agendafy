@@ -1,18 +1,7 @@
-[project]
-name = "agendafy"
-plan = "free"
+project_id = "dtovcvjeohjyrjivovid"
 
 [api]
-enabled = true
 port = 54321
 
 [analytics]
 enabled = false
-
-[functions]
-enabled = true
-verify_jwt = false
-
-[functions."send-whatsapp"]
-verify_jwt = false
-import_map = "./functions/send-whatsapp/deno.json"
